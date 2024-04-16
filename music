@@ -1,0 +1,76 @@
+from kivy.app import App
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.core.audio import SoundLoader
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+
+class MusicPlayerApp(App):
+    sound_calm = None
+    sound_motivation = None
+    sound_happy = None
+
+    def build(self):
+        layout = FloatLayout()
+
+        img = Image(source='brain.png',size_hint=(None,None), size=(450, 450))
+        img.pos_hint = {'center_x':0.5,'top':1}
+        layout.add_widget(img)
+
+        text_label = Label(text="What's in your mind?", size_hint=(None, None), size=(200, 50), pos_hint={'center_x': 0.5, 'top': 0.9}, font_size=24)
+        text_label.font_size = 24
+        layout.add_widget(text_label)
+
+        buttons_layout = BoxLayout(orientation='vertical', size_hint=(None, None), size=(200, 200), pos_hint={'center_x': 0.5, 'top': 0.5})
+
+        button_data = [{'text': 'CALM SONG', 'background_color': (0, 1, 1, 1), 'function': self.play_calm},
+                       {'text': 'MOTIVATIONAL SONG', 'background_color': (1, 0, 1, 1), 'function': self.play_motivation},
+                       {'text': 'HAPPY SONG', 'background_color': (0.3, 0.4, 1, 0.9), 'function': self.play_happy}]
+        
+        for data in button_data:
+            button = Button(text=data['text'], size_hint=(None, None), size=(500, 70), background_color=data['background_color'])
+            button.bind(on_press=data['function'])
+            buttons_layout.add_widget(button)
+
+        stop_button = Button(text='STOP', size_hint=(None,None),size=(500,70),background_color=(1,0,0,1))  # Corrected typo: 'background_color'
+        stop_button.bind(on_press=self.stop_song)  # Corrected typo: 'blnd' -> 'bind'
+        buttons_layout.add_widget(stop_button)
+
+        layout.add_widget(buttons_layout)
+        return layout 
+    
+    def play_calm(self, instance):
+        self.stop_song()
+        self.sound_calm = SoundLoader.load('Calm.mp3')
+        if self.sound_calm:
+            self.sound_calm.play()
+        else:
+            print("File problem...")
+
+    def play_motivation(self, instance):
+        self.stop_song()
+        self.sound_motivation = SoundLoader.load('motivational.mp3')
+        if self.sound_motivation:
+            self.sound_motivation.play()
+        else:
+            print("File problem...")
+
+    def play_happy(self, instance):
+        self.stop_song()
+        self.sound_happy = SoundLoader.load('happy.mp3')
+        if self.sound_happy:
+            self.sound_happy.play()
+        else:
+            print("File problem...")
+
+    def stop_song(self, instance=None):
+        if self.sound_calm:
+            self.sound_calm.stop()
+        if self.sound_motivation:
+            self.sound_motivation.stop()
+        if self.sound_happy:
+            self.sound_happy.stop()
+
+if __name__ == '__main__':
+    MusicPlayerApp().run()
